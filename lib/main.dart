@@ -36,22 +36,15 @@ const dir = 'sky';
 const media = 'media';
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   String? _fileName = 'findings.md';
-
   late GoogleStorageService fileService;
+  Future<String>? _fileFuture;
+  ValueKey<String> _markdownKey = ValueKey('Findings');
 
   @override
   void initState() {
-    fileService = GoogleStorageService(bucket: bucket, dir: dir);
     super.initState();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+    fileService = GoogleStorageService(bucket: bucket, dir: dir);
   }
 
   /// hvor er simpelmarkdownview? state
@@ -78,12 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            SizedBox(width: 800, child: SimpleMarkdownView(_fileName, fileService, key: UniqueKey())),
+            SizedBox(width: 800, child: SimpleMarkdownView(_fileFuture, fileService.imageDir, key: _markdownKey)),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: null,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -101,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 setState(() {
                   _fileName = fileServiceMap[n.title];
+                  _fileFuture = _fileName != null ? fileService.load(_fileName!) : null;
+                  _markdownKey = ValueKey<String>(_fileName ?? '');
                 });
               },
             ))
@@ -124,29 +119,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
 /// Loads a markdown file from Google Storage and displays it. It uses a standard base directory for images referenced in the MD-file.
 /// It takes the basic [fileName] of the markdown file as the single parameter.
+///
+/// Denne skal i bunnen ha en string med markdown.
+/// Input-forslag:
+/// Future<String>
+/// service.load
+/// image dir eller image builder
+///
+///
 class SimpleMarkdownView extends StatefulWidget {
-  final String? fileName;
-  final Service service;
+  final Future<String>? markdownFuture;
+  final String imageDir;
 
-  SimpleMarkdownView(this.fileName, this.service, {UniqueKey? key}) : super(key: key);
+  SimpleMarkdownView(this.markdownFuture, this.imageDir, {Key? key}) : super(key: key);
 
   @override
   _SimpleMarkdownViewState createState() => _SimpleMarkdownViewState();
 }
 
 class _SimpleMarkdownViewState extends State<SimpleMarkdownView> {
-  late String _imageDir;
   late String _markdown;
-  Future<String>? _markDownFuture;
 
   Widget _progressIndicator() => SizedBox(width: 40, height: 40, child: CircularProgressIndicator(color: Colors.amber));
 
   @override
   void initState() {
     super.initState();
-
-    _imageDir = widget.service.imageDir;
-    _markDownFuture = (widget.fileName != null) ? widget.service.load(widget.fileName!) : null;
   }
 
   @override
@@ -156,8 +154,8 @@ class _SimpleMarkdownViewState extends State<SimpleMarkdownView> {
       child: Card(
         elevation: 4,
         child: FutureBuilder<String>(
-          future: _markDownFuture,
-          initialData: 'Content is missing',
+          future: widget.markdownFuture,
+          initialData: 'No data',
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
               _markdown = snapshot.data!;
@@ -165,7 +163,7 @@ class _SimpleMarkdownViewState extends State<SimpleMarkdownView> {
               return Markdown(
                 data: _markdown,
                 selectable: true,
-                imageDirectory: _imageDir,
+                imageDirectory: widget.imageDir,
               );
             }
 
@@ -173,6 +171,7 @@ class _SimpleMarkdownViewState extends State<SimpleMarkdownView> {
               return Text('${snapshot.error}');
             }
 
+            // initial data, men ingen future.
             if (snapshot.connectionState == ConnectionState.none && snapshot.hasData) {
               return Text(snapshot.data!);
             }
@@ -206,17 +205,23 @@ class GoogleStorageService extends Service {
 
   String get imageDir => '$google_storage/$bucket/$dir/';
 
+  // TODO: Denne burde egentlig returnere null og ikke Future(null).
   @override
   Future<String> load(String name) async {
-    // TODO: rewrite getFileFromStorage to await async
     return await getFileFromStorage('$bucket/$dir/$name');
   }
+
+  // Future<String>? ll() async {
+  //   Future<String>? ff = null;
+  //   return ff;
+  // }
 }
 
 Future<String> getFileFromStorage(String fileName) async {
   final scheme = 'https';
   final host = 'storage.googleapis.com';
   Uri uri = Uri(scheme: scheme, host: host, path: fileName);
+  // TODO: rewrite getFileFromStorage to await async
   return http.get(uri).then((response) {
     if (response.statusCode == 200) {
       var html = convert.utf8.decode(response.bodyBytes);
