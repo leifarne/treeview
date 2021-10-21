@@ -36,8 +36,12 @@ class MemoryMarkdownService extends MarkdownService {
 
 class GoogleStorageMarkdownService extends MarkdownService {
   static const google_storage = 'https://storage.googleapis.com';
-  final String bucket;
-  final String dir;
+
+  // This is where we find the markdown files on Google Storage.
+  //
+  static const bucket = 'rokrust-fs2.appspot.com';
+  static const dir = 'sky';
+  static const media = 'media/';
 
   static const fileServiceMap = {
     'Being a Cloud Reseller': 'being-a-reseller.md',
@@ -51,7 +55,7 @@ class GoogleStorageMarkdownService extends MarkdownService {
     'Google Reseller Overview': 'goog-reseller-overview.md',
   };
 
-  GoogleStorageMarkdownService({required this.bucket, required this.dir, String imageDir = './'}) : super(imageDir);
+  GoogleStorageMarkdownService({String imageDir = media}) : super(imageDir);
 
   @override
   Future<void> init() async {
