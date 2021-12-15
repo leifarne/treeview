@@ -1,0 +1,56 @@
+[
+  { "name": "Being a Cloud Reseller", "file": "being-a-cloud-reseller.md" },
+  { "name": "MS Reseller Models", "file": "ms-reseller-overview.md" },
+  {
+    "name": "Direct vs Indirect Reseller?",
+    "file": "ms-direct-vs-indirect-reseller.md"
+  },
+  {
+    "name": "MS Customer",
+    "children": [
+      { "name": "Key Findings", "file": "ms-mca-key-findings.md" },
+      {
+        "name": "Detailed Walkthrough",
+        "file": "ms-mca-detailed-walkthrough.md"
+      },
+      { "name": "EA", "file": "ms-ea.md" },
+      { "name": "MOSA", "file": "ms-mosa.md" }
+    ]
+  },
+  {
+    "name": "MS Partner Agreement - Direct Bill",
+    "children": [
+      { "name": "MPA Key Findings", "file": "ms-mpa-key-findings.md" },
+      {
+        "name": "MPA Detailed Walkthrough",
+        "file": "ms-mpa-detailed-walkthrough.md"
+      },
+      { "name": "MPN", "file": "ms-mpn.md" }
+    ]
+  },
+  {
+    "name": "MS Partner Agreement - Indirect Reseller",
+    "children": [
+      { "name": "MPA Key Findings", "file": "ms-mpa-key-findings.md" },
+      {
+        "name": "MPA Detailed Walkthrough",
+        "file": "ms-mpa-detailed-walkthrough.md"
+      },
+      { "name": "MPN", "file": "ms-mpn.md" }
+    ]
+  },
+  {
+    "name": "Hosting Exception",
+    "children": [
+      { "name": "General", "file": "ms-hosting-exception-general.md" },
+      {
+        "name": "Different ways to use the Hosting Exception",
+        "file": "ms-hosting-exception-different-ways.md"
+      },
+      {
+        "name": "Pro/Cons with the Hosting Exception under the various MS Programs",
+        "file": "ms-hosting-exception-pro-con.md"
+      }
+    ]
+  }
+]
